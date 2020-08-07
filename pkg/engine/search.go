@@ -1,15 +1,15 @@
 package engine
 
-import (
-	"strings"
-)
+import "fmt"
 
-func Search(docs []Document, term string) ([]Document){
-	var r []Document
-	for _ , doc := range docs {
-		if strings.Contains(doc.Text, term) {
-			r = append(r, doc)
+func (idx index) Search(term string) [][]int {
+
+	var r [][]int
+	for _, token := range analyze(term) {
+		if ids, ok := idx[token]; ok {
+			r = append(r, ids)
 		}
 	}
+	fmt.Printf("Search results %v\n", r)
 	return r
 }
