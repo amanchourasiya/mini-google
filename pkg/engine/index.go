@@ -1,6 +1,10 @@
 package engine
 
-import "fmt"
+import (
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+)
 
 type index map[string][]int
 
@@ -25,4 +29,21 @@ func CreateIndex() index {
 	}
 	idx.add(docs)
 	return idx
+}
+
+func SaveIndex(idx index) {
+	fmt.Println("Saving Index")
+	jsonData, err := json.MarshalIndent(idx, "", " ")
+	if err != nil {
+		fmt.Printf("Error marshaling index to json %v\n", err)
+	}
+	err = ioutil.WriteFile("/root/index.json", jsonData, 0644)
+	if err != nil {
+		fmt.Printf("Error saving index json in json file %v\n", err)
+	}
+
+}
+
+func LoadIndex(idx index) index {
+
 }

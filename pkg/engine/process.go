@@ -15,11 +15,20 @@ import (
 	snowballeng "github.com/kljensen/snowball/english"
 )
 
+var (
+	docs []Document
+	DB   map[int]string
+)
+
 type Document struct {
-	Title string `xml:"title`
-	URL   string `xml:"url`
+	Title string `xml:"title"`
+	URL   string `xml:"url"`
 	Text  string `xml:"abstract"`
 	ID    int
+}
+
+func getDocuments() []Document {
+	return docs
 }
 
 func LoadDocuments(path string) ([]Document, error) {
@@ -33,17 +42,21 @@ func LoadDocuments(path string) ([]Document, error) {
 	dump := struct {
 		Documents []Document `xml:"doc"`
 	}{}
-	fmt.Print("Processing xml document")
+	fmt.Printf("Processing xml document\n")
 	if err := dec.Decode(&dump); err != nil {
 		return nil, err
 	}
-	fmt.Print("Processed xml document")
-	docs := dump.Documents
+	fmt.Printf("Processed xml document\n")
+	docs = dump.Documents
 	for i := range docs {
 		docs[i].ID = i
+		//fmt.Printf("documment url %s\n", docs[i].URL)
 	}
 
-	fmt.Print("Assigned ID to all documents")
+	fmt.Printf("Assigned ID to all documents\n")
+
+	createHashmap()
+	//printHashmap()
 	return docs, nil
 }
 
@@ -62,7 +75,7 @@ func lowercaseFilter(tokens []string) []string {
 	return r
 }
 
-var stopwords = map[string]struct{}{ // I wish Go had built-in sets.
+var stopwords = map[string]struct{}{
 	"a": {}, "and": {}, "be": {}, "have": {}, "i": {},
 	"in": {}, "of": {}, "that": {}, "the": {}, "to": {},
 }
@@ -91,4 +104,19 @@ func analyze(text string) []string {
 	tokens = stopwordsFilter(tokens)
 	tokens = stemmerFilter(tokens)
 	return tokens
+}
+
+func createHashmap() {
+	fmt.Printf("Creating hash map DB\n")
+	DB = make(map[int]string)
+	for _, doc := range docs {
+		DB[doc.ID] = doc.URL
+	}
+	fmt.Printf("Finished hash map")
+}
+
+func printHashmap() {
+	for key := range DB {
+		fmt.Printf("%d %s\n", key, DB[key])
+	}
 }

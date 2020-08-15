@@ -1,7 +1,5 @@
 package engine
 
-import "fmt"
-
 func (idx index) Search(term string) [][]int {
 
 	var r [][]int
@@ -10,6 +8,7 @@ func (idx index) Search(term string) [][]int {
 			r = append(r, ids)
 		}
 	}
-	fmt.Printf("Search results %v\n", r)
+	//fmt.Printf("Search results %v\n", r)
+	displayResults(r)
 	return r
 }
